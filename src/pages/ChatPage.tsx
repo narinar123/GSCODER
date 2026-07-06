@@ -1,101 +1,65 @@
-import { useState, useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import {
   Send, Paperclip, Mic, Image, Globe, FileText, Bot, Sparkles,
-  ChevronDown, Copy, RotateCcw, ThumbsUp, ThumbsDown, Code2, StopCircle
+  Copy, RotateCcw, ThumbsUp, ThumbsDown, Code2, StopCircle, Trash2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { motion, AnimatePresence } from "framer-motion";
-
-interface Message {
-  id: string;
-  role: "user" | "assistant";
-  content: string;
-  model?: string;
-  ts: Date;
-}
-
-const models = [
-  { id: "gpt5", name: "GPT-5", provider: "OpenAI" },
-  { id: "claude", name: "Claude 4", provider: "Anthropic" },
-  { id: "gemini", name: "Gemini Ultra", provider: "Google" },
-  { id: "deepseek", name: "DeepSeek V3", provider: "DeepSeek" },
-  { id: "qwen", name: "Qwen 3", provider: "Alibaba" },
-  { id: "grok", name: "Grok 3", provider: "xAI" },
-  { id: "mistral", name: "Mistral Large", provider: "Mistral" },
-];
-
-const sampleReplies = [
-  "I'll help you with that. Here's my analysis:\n\n```typescript\nconst agent = new AIAgent({\n  model: 'gpt-5',\n  tools: ['code', 'search', 'browser'],\n  memory: true\n});\n\nawait agent.execute(task);\n```\n\nThis creates an agent with code generation, web search, and browser automation capabilities. The agent persists memory across sessions for context continuity.",
-  "Based on my research, here are the key findings:\n\n1. **Architecture**: Microservices pattern with event-driven communication\n2. **Stack**: Next.js + FastAPI + PostgreSQL + Redis\n3. **AI Layer**: LangChain orchestration with multi-model routing\n4. **Deployment**: Kubernetes with auto-scaling\n\nWould you like me to generate the implementation plan?",
-  "I've analyzed the document and extracted the following insights:\n\n- Revenue increased 34% QoQ\n- Customer acquisition cost decreased by 12%\n- Net promoter score: 72 (up from 65)\n\n**Recommendation**: Focus on retention strategies in Q3 while maintaining current acquisition channels.",
-];
+import { useChat } from "@/hooks/useChat";
+import { LLM_MODELS, detectProvider } from "@/lib/llm";
 
 export default function ChatPage() {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const { messages, isStreaming, selectedModel, setSelectedModel, sendMessage, stopStreaming, clearMessages } = useChat("Chat");
   const [input, setInput] = useState("");
-  const [model, setModel] = useState("gpt5");
-  const [isStreaming, setIsStreaming] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  const provider = detectProvider();
+
   const handleSend = () => {
     if (!input.trim() || isStreaming) return;
-    const userMsg: Message = { id: Date.now().toString(), role: "user", content: input, ts: new Date() };
-    setMessages((m) => [...m, userMsg]);
+    sendMessage(input.trim());
     setInput("");
-    setIsStreaming(true);
-
-    // Simulate streaming response
-    const reply = sampleReplies[messages.length % sampleReplies.length];
-    const assistantMsg: Message = {
-      id: (Date.now() + 1).toString(),
-      role: "assistant",
-      content: "",
-      model: models.find((m) => m.id === model)?.name,
-      ts: new Date(),
-    };
-    setMessages((m) => [...m, assistantMsg]);
-
-    let i = 0;
-    const interval = setInterval(() => {
-      i += Math.floor(Math.random() * 3) + 1;
-      if (i >= reply.length) {
-        i = reply.length;
-        clearInterval(interval);
-        setIsStreaming(false);
-      }
-      setMessages((msgs) =>
-        msgs.map((m) => (m.id === assistantMsg.id ? { ...m, content: reply.slice(0, i) } : m))
-      );
-    }, 15);
   };
 
   return (
     <div className="flex flex-col h-[calc(100vh-3.5rem)] max-w-4xl mx-auto">
       {/* Model selector */}
       <div className="flex items-center justify-between py-3 border-b border-border">
-        <Select value={model} onValueChange={setModel}>
-          <SelectTrigger className="w-[200px] bg-secondary border-border text-xs h-8">
-            <Bot className="w-3.5 h-3.5 mr-1.5 text-primary" />
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {models.map((m) => (
-              <SelectItem key={m.id} value={m.id}>
-                <span className="font-medium">{m.name}</span>
-                <span className="text-muted-foreground ml-1.5">· {m.provider}</span>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
-          <div className="w-1.5 h-1.5 rounded-full bg-success" />
-          Streaming enabled
+        <div className="flex items-center gap-2">
+          <Select value={selectedModel} onValueChange={setSelectedModel}>
+            <SelectTrigger className="w-[220px] bg-secondary border-border text-xs h-8">
+              <Bot className="w-3.5 h-3.5 mr-1.5 text-primary" />
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {LLM_MODELS.map((m) => (
+                <SelectItem key={m.id} value={m.id}>
+                  <span className="font-medium">{m.name}</span>
+                  <span className="text-muted-foreground ml-1.5">· {m.provider}</span>
+                  {m.fast && <span className="ml-1 text-[9px] text-success">⚡</span>}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground px-2 py-1 rounded-lg bg-secondary/50 border border-border">
+            <div className={`w-1.5 h-1.5 rounded-full ${provider !== "demo" ? "bg-success" : "bg-warning"}`} />
+            {provider === "gemini" ? "Gemini Live" : provider === "openai" ? "OpenAI Live" : "Demo Mode"}
+          </div>
         </div>
+        {messages.length > 0 && (
+          <button
+            onClick={clearMessages}
+            className="flex items-center gap-1.5 text-[11px] text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded-lg hover:bg-muted"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            Clear
+          </button>
+        )}
       </div>
 
       {/* Messages */}
@@ -139,9 +103,10 @@ export default function ChatPage() {
           ))}
         </AnimatePresence>
         {isStreaming && (
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground pl-10">
             <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-            Generating...
+            <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" style={{ animationDelay: "0.2s" }} />
+            <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" style={{ animationDelay: "0.4s" }} />
           </div>
         )}
         <div ref={bottomRef} />
@@ -168,11 +133,11 @@ export default function ChatPage() {
               ))}
             </div>
             {isStreaming ? (
-              <Button size="icon" variant="destructive" className="w-8 h-8 rounded-full" onClick={() => setIsStreaming(false)}>
+              <Button size="icon" variant="destructive" className="w-8 h-8 rounded-full" onClick={stopStreaming}>
                 <StopCircle className="w-4 h-4" />
               </Button>
             ) : (
-              <Button size="icon" onClick={handleSend} disabled={!input.trim()} className="w-8 h-8 rounded-full bg-primary">
+              <Button size="icon" onClick={handleSend} className="w-8 h-8 rounded-full bg-primary">
                 <Send className="w-4 h-4" />
               </Button>
             )}
@@ -183,8 +148,10 @@ export default function ChatPage() {
   );
 }
 
+
+
 function MessageContent({ content }: { content: string }) {
-  // Simple markdown-like rendering for code blocks
+  if (!content) return <span className="inline-block w-3 h-4 bg-primary/40 rounded animate-pulse" />;
   const parts = content.split(/(```[\s\S]*?```)/g);
   return (
     <div className="space-y-2">

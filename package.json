@@ -1,15 +1,44 @@
 {
-  "name": "qoder-work",
+  "name": "gscoder-ai",
+  "productName": "GSQoderAI",
+  "version": "1.0.0",
+  "description": "GSQoderAI — Production-Grade Multi-Agent AI Workspace IDE",
   "private": true,
-  "version": "0.0.0",
   "type": "module",
+  "main": "electron/main.js",
+  "homepage": "./",
+  "author": "GS Groups <hello@gsgroups.net>",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "electron:dev": "concurrently -n VITE,ELECTRON -c cyan,yellow \"npm run dev\" \"wait-on http://localhost:5173 && cross-env NODE_ENV=development electron .\"",
+    "electron:build": "npm run build && electron-builder",
+    "electron:build:mac": "npm run build && electron-builder --mac",
+    "electron:build:win": "npm run build && electron-builder --win",
+    "electron:build:linux": "npm run build && electron-builder --linux"
+  },
+  "build": {
+    "appId": "net.gsgroups.gscoderai",
+    "productName": "GSQoderAI",
+    "icon": "public/icons/icon.png",
+    "directories": { "buildResources": "public/icons" },
+    "files": ["dist/**/*", "electron/**/*", "package.json"],
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "target": [{ "target": "dmg", "arch": ["x64", "arm64"] }]
+    },
+    "win": {
+      "target": [{ "target": "nsis", "arch": ["x64"] }]
+    },
+    "linux": {
+      "target": [{ "target": "AppImage", "arch": ["x64"] }],
+      "category": "Development"
+    }
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.110.0",
     "clsx": "^2.1.1",
     "framer-motion": "^12.42.2",
     "lucide-react": "^1.23.0",
@@ -29,11 +58,16 @@
     "@types/react-router-dom": "^5.3.3",
     "@vitejs/plugin-react": "^6.0.3",
     "autoprefixer": "^10.5.2",
+    "concurrently": "^9.1.2",
+    "cross-env": "^7.0.3",
+    "electron": "^36.4.0",
+    "electron-builder": "^25.1.8",
     "oxlint": "^1.71.0",
     "postcss": "^8.5.16",
     "tailwindcss": "^3.4.19",
     "tailwindcss-animate": "^1.0.7",
     "typescript": "~6.0.2",
-    "vite": "^8.1.1"
+    "vite": "^8.1.1",
+    "wait-on": "^8.0.3"
   }
 }
