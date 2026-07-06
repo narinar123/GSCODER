@@ -2,8 +2,9 @@ import { NavLink } from "react-router-dom";
 import {
   Home, MessageCircle, Bot, FolderKanban, Brain, ListTodo, Zap,
   Puzzle, Server, Rocket, BarChart3, Cpu, Users, Box,
-  Settings, ChevronLeft, ChevronRight, ChevronDown
+  Settings, ChevronLeft, ChevronRight, ChevronDown, LogOut
 } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 const LOGO_URL = "https://www.gsgroups.net/gslogo.png";
 
@@ -47,6 +48,8 @@ const navSections = [
 interface Props { collapsed: boolean; onToggle: () => void }
 
 export default function Sidebar({ collapsed, onToggle }: Props) {
+  const { user, signOut } = useAuth();
+  const initials = user?.name?.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || "GS";
   return (
     <aside className={`flex flex-col border-r border-border bg-sidebar transition-all duration-200 ${collapsed ? "w-14" : "w-52"} hidden md:flex`}>
       <div className="p-3 flex items-center justify-between border-b border-border">
@@ -100,18 +103,27 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
 
       <div className="border-t border-border p-2">
         <div className={`flex items-center gap-2 ${collapsed ? "justify-center" : ""}`}>
-          <div className="w-6 h-6 rounded-lg bg-primary/20 flex items-center justify-center text-primary text-[9px] font-bold shrink-0">PK</div>
+          <div className="w-6 h-6 rounded-lg bg-primary/20 flex items-center justify-center text-primary text-[9px] font-bold shrink-0">{initials}</div>
           {!collapsed && (
             <div className="flex-1 min-w-0">
-              <p className="text-[11px] font-medium text-foreground truncate">Praveen K</p>
-              <p className="text-[8px] text-muted-foreground uppercase tracking-wider">Admin</p>
+              <p className="text-[11px] font-medium text-foreground truncate">{user?.name || "User"}</p>
+              <p className="text-[8px] text-muted-foreground uppercase tracking-wider">{user?.role || "Member"}</p>
             </div>
           )}
         </div>
         {!collapsed && (
-          <NavLink to="/settings" className="flex items-center gap-2 px-2 py-1 mt-1 rounded-lg text-[10px] text-muted-foreground hover:text-foreground hover:bg-sidebar-accent transition-colors">
-            <Settings className="w-3 h-3" /> Settings
-          </NavLink>
+          <div className="flex gap-1 mt-1">
+            <NavLink to="/settings" className="flex-1 flex items-center gap-2 px-2 py-1 rounded-lg text-[10px] text-muted-foreground hover:text-foreground hover:bg-sidebar-accent transition-colors">
+              <Settings className="w-3 h-3" /> Settings
+            </NavLink>
+            <button
+              onClick={() => signOut()}
+              className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+              title="Sign out"
+            >
+              <LogOut className="w-3 h-3" />
+            </button>
+          </div>
         )}
       </div>
     </aside>
