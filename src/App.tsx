@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import LoginPage from "./pages/LoginPage";
+import MarketingPage from "./pages/MarketingPage";
 import DashboardLayout from "./components/layout/DashboardLayout";
 import WorkspacePage from "./pages/WorkspacePage";
 import ChatPage from "./pages/ChatPage";
@@ -37,9 +38,11 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
 function AppRoutes() {
   return (
     <Routes>
+      <Route path="/" element={<MarketingPage />} />
+      <Route path="/pricing" element={<MarketingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route
-        path="/"
+        path="/app"
         element={
           <PrivateRoute>
             <DashboardLayout />
