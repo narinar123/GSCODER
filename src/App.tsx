@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import LoginPage from "./pages/LoginPage";
+import MarketingPage from "./pages/MarketingPage";
+import PaymentPage from "./pages/PaymentPage";
 import DashboardLayout from "./components/layout/DashboardLayout";
 import WorkspacePage from "./pages/WorkspacePage";
 import ChatPage from "./pages/ChatPage";
@@ -25,7 +27,7 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <img src="https://www.gsgroups.net/gslogo.png" alt="GS Logo" className="w-10 h-10 rounded-xl animate-pulse" />
+          <img src="/favicon.svg" alt="GSQoderAI logo" className="w-10 h-10 rounded-xl animate-pulse" />
           <p className="text-sm text-muted-foreground">Loading GSQoderAI...</p>
         </div>
       </div>
@@ -37,9 +39,12 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
 function AppRoutes() {
   return (
     <Routes>
+      <Route path="/" element={<MarketingPage />} />
+      <Route path="/pricing" element={<MarketingPage />} />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/activate" element={<PaymentPage />} />
       <Route
-        path="/"
+        path="/app"
         element={
           <PrivateRoute>
             <DashboardLayout />

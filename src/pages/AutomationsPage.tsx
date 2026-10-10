@@ -1,9 +1,9 @@
 import { useState, useMemo } from "react";
 import {
   Search, Plus, Play, Pause, ChevronRight, MoreHorizontal,
-  Zap, Code2, Globe, Megaphone, Users, HeadphonesIcon, BookOpen,
+  Zap, Code2, Megaphone, Users, HeadphonesIcon, BookOpen,
   Server, Bot, ArrowRight, Brain, Shield, Eye, Sparkles,
-  CheckCircle2, Clock, AlertCircle, X
+  CheckCircle2, Clock, X
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";

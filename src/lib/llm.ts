@@ -27,7 +27,7 @@ const DEMO_RESPONSES = [
 
 let demoIndex = 0
 
-async function* streamDemo(userMessage: string): AsyncGenerator<string> {
+async function* streamDemo(_userMessage: string): AsyncGenerator<string> {
   const response = DEMO_RESPONSES[demoIndex % DEMO_RESPONSES.length]
   demoIndex++
   

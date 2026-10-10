@@ -97,7 +97,7 @@ export default function LoginPage() {
         if (error) {
           setAuthError(error);
         } else {
-          navigate("/");
+          navigate("/app");
         }
       } else {
         const { error } = await signUp(email, password, name);
@@ -105,7 +105,7 @@ export default function LoginPage() {
           setAuthError(error);
         } else {
           setAuthSuccess("Account created! Redirecting...");
-          setTimeout(() => navigate("/"), 1500);
+          setTimeout(() => navigate("/app"), 1500);
         }
       }
     } finally {
