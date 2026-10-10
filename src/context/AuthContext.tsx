@@ -21,11 +21,17 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || import.meta.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseKey =
+  import.meta.env.VITE_SUPABASE_ANON_KEY ||
+  import.meta.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+  import.meta.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+
 const SUPABASE_CONFIGURED = Boolean(
-  import.meta.env.VITE_SUPABASE_URL &&
-    import.meta.env.VITE_SUPABASE_ANON_KEY &&
-    import.meta.env.VITE_SUPABASE_URL !== 'https://placeholder.supabase.co' &&
-    import.meta.env.VITE_SUPABASE_ANON_KEY !== 'placeholder-anon-key',
+  supabaseUrl &&
+    supabaseKey &&
+    supabaseUrl !== 'https://placeholder.supabase.co' &&
+    supabaseKey !== 'placeholder-anon-key',
 )
 
 function configurationError() {
