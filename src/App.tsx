@@ -3,6 +3,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import LoginPage from "./pages/LoginPage";
 import MarketingPage from "./pages/MarketingPage";
+import PaymentPage from "./pages/PaymentPage";
 import DashboardLayout from "./components/layout/DashboardLayout";
 import WorkspacePage from "./pages/WorkspacePage";
 import ChatPage from "./pages/ChatPage";
@@ -41,6 +42,7 @@ function AppRoutes() {
       <Route path="/" element={<MarketingPage />} />
       <Route path="/pricing" element={<MarketingPage />} />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/activate" element={<PaymentPage />} />
       <Route
         path="/app"
         element={
