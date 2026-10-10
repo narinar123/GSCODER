@@ -21,18 +21,22 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-// Demo user for local development / when Supabase not configured
-const DEMO_USER: User = {
-  id: 'demo-user-id',
-  email: 'praveen@gsgroups.net',
-  name: 'Praveen K',
-  role: 'Admin',
-  avatar: undefined,
+const SUPABASE_CONFIGURED = Boolean(
+  import.meta.env.VITE_SUPABASE_URL &&
+    import.meta.env.VITE_SUPABASE_ANON_KEY &&
+    import.meta.env.VITE_SUPABASE_URL !== 'https://placeholder.supabase.co' &&
+    import.meta.env.VITE_SUPABASE_ANON_KEY !== 'placeholder-anon-key',
+)
+
+function configurationError() {
+  return 'Authentication is unavailable because the production Supabase configuration is missing.'
 }
 
-const SUPABASE_CONFIGURED =
-  import.meta.env.VITE_SUPABASE_URL &&
-  import.meta.env.VITE_SUPABASE_URL !== 'https://placeholder.supabase.co'
+function authError(message: string | undefined) {
+  if (!message) return 'Unable to complete authentication. Please try again.'
+  if (/invalid login credentials|user already registered/i.test(message)) return 'Invalid email or password.'
+  return message
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
@@ -40,8 +44,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!SUPABASE_CONFIGURED) {
-      // Demo mode: auto login
-      setUser(DEMO_USER)
       setLoading(false)
       return
     }
@@ -75,19 +77,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const signIn = async (email: string, password: string): Promise<{ error: string | null }> => {
-    if (!SUPABASE_CONFIGURED) {
-      setUser(DEMO_USER)
-      return { error: null }
-    }
+    if (!SUPABASE_CONFIGURED) return { error: configurationError() }
     const { error } = await supabase.auth.signInWithPassword({ email, password })
-    return { error: error?.message || null }
+    return { error: authError(error?.message) }
   }
 
   const signUp = async (email: string, password: string, name: string): Promise<{ error: string | null }> => {
-    if (!SUPABASE_CONFIGURED) {
-      setUser({ ...DEMO_USER, email, name })
-      return { error: null }
-    }
+    if (!SUPABASE_CONFIGURED) return { error: configurationError() }
     const { error } = await supabase.auth.signUp({
       email,
       password,
@@ -97,7 +93,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           import.meta.env.VITE_SUPABASE_REDIRECT_URL || `${window.location.origin}/auth/callback`,
       },
     })
-    return { error: error?.message || null }
+    return { error: authError(error?.message) }
   }
 
   const signOut = async () => {
