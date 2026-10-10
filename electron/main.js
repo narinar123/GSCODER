@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu, Tray, ipcMain, shell, nativeTheme, protocol } = require('electron');
+const { app, BrowserWindow, Menu, ipcMain, shell, nativeTheme } = require('electron');
 const path = require('path');
 const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged;
 
