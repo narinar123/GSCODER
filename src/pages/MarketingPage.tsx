@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ArrowRight, Check, ShieldCheck, Sparkles, Workflow, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,8 +10,9 @@ const plans = [
 
 export default function MarketingPage() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <header className="sticky top-0 z-20 border-b border-border/70 bg-background/85 backdrop-blur-xl">
+    <div className="relative min-h-screen overflow-hidden bg-background text-foreground">
+      <div className="pointer-events-none absolute inset-0 elite-grid opacity-60" aria-hidden="true" />
+      <header className="sticky top-0 z-20 border-b border-border/70 bg-background/75 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8">
           <Link to="/" className="flex items-center gap-3" aria-label="GSQoderAI home">
             <img src="/favicon.svg" alt="GSQoderAI" className="size-9 rounded-xl" />
@@ -30,19 +32,19 @@ export default function MarketingPage() {
 
       <main>
         <section className="mx-auto grid max-w-7xl gap-12 px-5 pb-20 pt-20 lg:grid-cols-[1.05fr_.95fr] lg:items-center lg:px-8 lg:pt-28">
-          <div>
+          <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary"><Sparkles data-icon="inline-start" /> Production AI workspace</div>
             <h1 className="max-w-3xl text-5xl font-semibold tracking-[-0.05em] text-balance md:text-7xl">Turn complex work into <span className="gradient-text">shipped work.</span></h1>
             <p className="mt-6 max-w-xl text-lg leading-8 text-muted-foreground">GSQoderAI gives engineering and operations teams one controlled workspace for agents, projects, knowledge, automations, and delivery.</p>
             <div className="mt-8 flex flex-wrap gap-3"><Link to="/login"><Button size="lg">Create a workspace <ArrowRight data-icon="inline-end" /></Button></Link><a href="#pricing"><Button size="lg" variant="outline">View plans</Button></a></div>
             <p className="mt-4 text-xs text-muted-foreground">Paid workspaces only. No free trial or demo workspace.</p>
-          </div>
-          <div className="relative overflow-hidden rounded-3xl border border-border bg-card p-4 shadow-2xl shadow-primary/10">
+          </motion.div>
+          <motion.div initial={{ opacity: 0, scale: 0.96, y: 24 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.12 }} className="glass-panel interactive-lift relative overflow-hidden rounded-3xl p-4">
             <div className="rounded-2xl border border-border bg-background p-5"><div className="mb-5 flex items-center justify-between"><div><p className="text-xs text-muted-foreground">Workspace overview</p><p className="mt-1 text-xl font-semibold">Ship with confidence</p></div><div className="rounded-xl bg-primary/10 p-2 text-primary"><Workflow /></div></div><div className="grid gap-3 sm:grid-cols-3">{[["12", "Active agents"], ["48", "Tasks automated"], ["99.8%", "Uptime"]].map(([value, label]) => <div key={label} className="rounded-xl border border-border p-3"><p className="text-xl font-semibold">{value}</p><p className="mt-1 text-xs text-muted-foreground">{label}</p></div>)}</div><div className="mt-4 rounded-xl border border-border p-4"><div className="flex items-center justify-between"><span className="text-sm font-medium">Release pipeline</span><span className="text-xs text-primary">Running</span></div><div className="mt-4 h-2 overflow-hidden rounded-full bg-muted"><div className="h-full w-3/4 rounded-full bg-primary" /></div><div className="mt-3 flex justify-between text-[11px] text-muted-foreground"><span>Research</span><span>Build</span><span>Test</span><span>Deploy</span></div></div></div>
-          </div>
+          </motion.div>
         </section>
 
-        <section id="platform" className="border-y border-border bg-card/40"><div className="mx-auto grid max-w-7xl gap-4 px-5 py-16 md:grid-cols-3 lg:px-8">{[[Zap, "Move faster", "Delegate repeatable work to agents that understand your workspace context."], [ShieldCheck, "Stay in control", "Permissions, activity history, and deployment boundaries keep teams accountable."], [Workflow, "Connect the work", "Bring projects, knowledge, tasks, and automations together in one operating layer."]].map(([Icon, title, body]) => <div key={title as string} className="rounded-2xl border border-border bg-background p-6"><Icon className="mb-5 text-primary" /><h2 className="text-lg font-semibold">{title as string}</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">{body as string}</p></div>)}</div></section>
+        <section id="platform" className="border-y border-border bg-card/40"><div className="mx-auto grid max-w-7xl gap-4 px-5 py-16 md:grid-cols-3 lg:px-8">{[[Zap, "Move faster", "Delegate repeatable work to agents that understand your workspace context."], [ShieldCheck, "Stay in control", "Permissions, activity history, and deployment boundaries keep teams accountable."], [Workflow, "Connect the work", "Bring projects, knowledge, tasks, and automations together in one operating layer."]].map(([Icon, title, body]) => <motion.div key={title as string} whileHover={{ y: -6 }} transition={{ duration: 0.35 }} className="interactive-lift rounded-2xl border border-border bg-background/70 p-6 backdrop-blur-sm"><Icon className="mb-5 text-primary" /><h2 className="text-lg font-semibold">{title as string}</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">{body as string}</p></motion.div>)}</div></section>
 
         <section id="pricing" className="mx-auto max-w-7xl px-5 py-20 lg:px-8"><div className="max-w-2xl"><p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Simple pricing</p><h2 className="mt-3 text-4xl font-semibold tracking-tight">Pay for production access.</h2><p className="mt-4 text-muted-foreground">Choose a plan for your team. Payment processing and activation are intentionally gated until a verified payment provider is connected.</p></div><div className="mt-10 grid gap-5 md:grid-cols-2">{plans.map((plan) => <article key={plan.name} className="rounded-2xl border border-border bg-card p-6"><h3 className="text-xl font-semibold">{plan.name}</h3><p className="mt-6 text-4xl font-semibold">{plan.price}<span className="ml-2 text-sm font-normal text-muted-foreground">/ month</span></p><p className="mt-1 text-sm text-muted-foreground">{plan.detail}</p><ul className="mt-6 grid gap-3">{plan.features.map((feature) => <li key={feature} className="flex gap-2 text-sm text-muted-foreground"><Check className="size-4 shrink-0 text-primary" />{feature}</li>)}</ul><Link to="/activate" className="mt-8 block"><Button className="w-full">Continue to activation</Button></Link></article>)}</div></section>
         <section id="security" className="border-t border-border"><div className="mx-auto max-w-7xl px-5 py-14 text-sm text-muted-foreground lg:px-8"><p><span className="font-semibold text-foreground">Built for accountable teams.</span> Role-aware navigation, protected workspaces, and auditable activity are part of the product surface. UPI activation requires a server-side payment gateway and webhook verification before access can be granted.</p></div></section>
