@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase'
 interface User {
   id: string
   email: string
+  phone?: string
   name: string
   role: string
   avatar?: string
